@@ -1,6 +1,8 @@
 import * as net from 'net';
 import { isValidKey } from './util/auth';
 import { spawn, ChildProcess } from 'child_process';
+import { allowedFormats } from './util/audio';
+
 
 const server: net.Server = net.createServer((socket: net.Socket) => {
     console.log(socket.address());
@@ -18,18 +20,27 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
         }
         else if (isAuthorized) {
             // Check stream metadata
-            const frameRate: number = data.slice(0, 2).readUInt16LE();
-            const channelCount: number = data.slice(2, 4).readUInt16LE();
-            const inputFormat: string = data.slice(4, 9).toString();
+            try {
+                const frameRate: number = data.slice(0, 2).readUInt16LE();
+                const channelCount: number = data.slice(2, 4).readUInt16LE();
+                const inputFormat: string = data.slice(4, 9).toString();
 
-            console.log(frameRate, channelCount, inputFormat);
-            process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'wav', ,'-y', `${playbackId}.wav`]);
-            socket.write('good');
-            isStreamReady = true;
+                if (!allowedFormats.includes(inputFormat)) {
+                    throw 'Input format is not valid';
+                }
+
+                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'wav', ,'-y', `${playbackId}.wav`]);
+                socket.write('good');
+                isStreamReady = true;
+            } catch (err: unknown) {
+                // If data is malformed, kill socket
+                socket.write('wrong');
+                socket.end();
+                socket.destroy();
+            }    
         }
         else {
             const streamKey: string = data.toString();
-            console.log(streamKey);
             playbackId = isValidKey(streamKey);
 
             if (!playbackId) {
