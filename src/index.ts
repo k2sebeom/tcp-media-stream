@@ -29,7 +29,8 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
                     throw 'Input format is not valid';
                 }
 
-                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'wav', ,'-y', `${playbackId}.wav`]);
+                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'wav', '-y', `${playbackId}.wav`]);
+
                 socket.write('good');
                 isStreamReady = true;
             } catch (err: unknown) {
@@ -37,7 +38,7 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
                 socket.write('wrong');
                 socket.end();
                 socket.destroy();
-            }    
+            }
         }
         else {
             const streamKey: string = data.toString();
@@ -59,6 +60,9 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
 
     socket.on('close', () => {
         console.log("Disconnected");
+        if (process != null) {
+            process.stdin.end();
+        }
     });
 });
 
