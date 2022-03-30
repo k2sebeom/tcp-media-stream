@@ -1,0 +1,30 @@
+{
+  "name": "tcp-media-stream",
+  "version": "1.0.0",
+  "description": "An experimental media streaming server with raw ingestion through tcp socket",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k2sebeom/tcp-media-stream.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/k2sebeom/tcp-media-stream/issues"
+  },
+  "homepage": "https://github.com/k2sebeom/tcp-media-stream#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0"
+  },
+  "dependencies": {
+    "net": "^1.0.2"
+  }
+}
