@@ -19,7 +19,7 @@ b = 2
 fr = a.to_bytes(2, 'little')
 ac = b.to_bytes(2, 'little')
 
-s.send('abcdef'.encode())
+s.send('asdsad'.encode())
 print(s.recv(1024))
 s.send(fr + ac + 'f32le'.encode())
 print(s.recv(1024))
