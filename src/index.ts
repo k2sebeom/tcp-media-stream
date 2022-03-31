@@ -29,8 +29,10 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
                     throw 'Input format is not valid';
                 }
 
-                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'wav', '-y', `${playbackId}.wav`]);
-
+                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'hls', '-hls_playlist_type', 'event', '-hls_time', '2', '-y', `music/${playbackId}/master.m3u8`]);
+		process.stderr.on('data', (data) => {
+			console.log(data.toString());
+		})
                 socket.write('good');
                 isStreamReady = true;
             } catch (err: unknown) {
@@ -72,6 +74,6 @@ server.on('error', (err: Error) => {
 });
 
 
-server.listen(5222, () => {
+server.listen(5222, '0.0.0.0', () => {
     console.log("Listening...");
 });
