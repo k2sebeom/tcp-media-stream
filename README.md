@@ -16,13 +16,19 @@ You can test your streaming server using a companion iOS [app](https://github.co
 
 ## Connection
 
-The media server initiates streaming beginning with 2 handshakes. First, client should send a valid stream key to the server.
-The server validates the received key and sends a response to the client. After the client receives a 'good' sign from the server, then it sends a packet containing streaming metadata.
-The packet is a 9 bytes data containing sampling rate, channel count, and data format. Once server receives correct metadata, it opens a transcoder and starts feeding audio data to the transcoder to create HLS contents.
-
 ![Protocol](./asset/protocol.png)
 
+The media server initiates streaming beginning with 2 handshakes. First, client should send a valid stream key to the server.
+The server validates the received key and sends a response to the client. After the client receives a 'good' sign from the server, then it sends a packet containing streaming metadata.
+
 ![Packet](./asset/packet.png)
+
+The packet is a 9 bytes data containing sampling rate, channel count, and data format. The first two bytes contain sampling rate in a format of litte-endian encoded unsigned-int. The next two bytes contain channel count in a format of litte-endian encoded unsigned-int. The last 5 bytes is a string indicating a data format (ex. f32le, s16le).
+
+
+Once server receives correct metadata, it opens a transcoder and starts feeding audio data to the transcoder to create HLS contents.
+
+
 
 ## Action
 
