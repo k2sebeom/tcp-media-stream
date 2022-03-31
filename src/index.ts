@@ -2,7 +2,7 @@ import * as net from 'net';
 import { isValidKey } from './util/auth';
 import { spawn, ChildProcess } from 'child_process';
 import { allowedFormats } from './util/audio';
-
+import { existsSync, mkdirSync } from 'fs';
 
 const server: net.Server = net.createServer((socket: net.Socket) => {
     console.log(socket.address());
@@ -28,11 +28,17 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
                 if (!allowedFormats.includes(inputFormat)) {
                     throw 'Input format is not valid';
                 }
-
-                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'hls', '-hls_playlist_type', 'event', '-hls_time', '2', '-y', `music/${playbackId}/master.m3u8`]);
-		process.stderr.on('data', (data) => {
-			console.log(data.toString());
-		})
+                const targetDir = `music/${playbackId}`;
+                if(!existsSync(targetDir)) {
+                    mkdirSync(targetDir);
+                }
+                process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'hls', '-hls_playlist_type', 'event', '-hls_time', '2', '-y', `${targetDir}/master.m3u8`]);
+                process.stderr.on('data', (data) => {
+                    console.log(data.toString());
+                });
+                process.on('close', (code) => {
+                    console.log("Transcoder exited with " + code);
+                });
                 socket.write('good');
                 isStreamReady = true;
             } catch (err: unknown) {
