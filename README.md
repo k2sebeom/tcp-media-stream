@@ -11,6 +11,9 @@ npm install
 npm run build && npm start
 ```
 
+## Companion App
+You can test your streaming server using a companion iOS [app](https://github.com/k2sebeom/tcp-media-client)
+
 ## Connection
 
 The media server initiates streaming beginning with 2 handshakes. First, client should send a valid stream key to the server.
