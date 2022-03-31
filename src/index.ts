@@ -30,7 +30,7 @@ const server: net.Server = net.createServer((socket: net.Socket) => {
                 }
                 const targetDir = `music/${playbackId}`;
                 if(!existsSync(targetDir)) {
-                    mkdirSync(targetDir);
+                    mkdirSync(targetDir, { recursive: true });
                 }
                 process = spawn('ffmpeg', ['-f', `${inputFormat}`, '-ar', `${frameRate}`, '-ac', `${channelCount}`, '-i', 'pipe:', '-f', 'hls', '-hls_playlist_type', 'event', '-hls_time', '2', '-y', `${targetDir}/master.m3u8`]);
                 process.stderr.on('data', (data) => {
