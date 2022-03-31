@@ -4,6 +4,7 @@ An experimental media streaming server with raw ingestion through tcp socket
 ## Installation
 ```
 npm install
+sudo apt install ffmpeg
 ```
 
 ## Run
